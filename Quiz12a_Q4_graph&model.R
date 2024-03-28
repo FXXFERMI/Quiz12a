@@ -22,9 +22,9 @@ library(rstanarm)
 
 #### Plotting ####
 plots <- lapply(hospital_names, function(hospital) {
-  subset_data <- data  # Copy the entire data dataframe
-  ggplot(subset_data, aes(x = Year, y = .data[[hospital]])) +  # Use .data[[hospital]] to access hospital-specific columns
-    geom_bar(stat = "identity", fill = "skyblue") +
+  subset_data <- data  
+  ggplot(subset_data, aes(x = Year, y = .data[[hospital]])) +  
+    geom_bar(stat = "identity", fill = "red") +
     labs(title = paste("Cancer-Related Deaths in", hospital),
          x = "Year",
          y = "Number of Deaths") +
