@@ -21,20 +21,16 @@ library(tidyverse)
 library(testthat)
 
 #### Simulate Data ####
-# Set seed for reproducibility
 set.seed(123)
 
-# Define the number of years and hospitals
 num_years <- 20
 num_hospitals <- 5
 
-# Create a dataframe to store the data
 data <- data.frame(Year = 2004:2023)
 
-# Generate random numbers of deaths for each hospital for each year
 set.seed(123)
 
-# Define the number of years and hospitals
+
 num_years <- 20
 num_hospitals <- 5
 
