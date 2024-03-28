@@ -42,23 +42,6 @@ data[hospital_names] <- sapply(1:num_hospitals, function(i) {
 })
 
 
-#### Plotting ####
-plots <- lapply(hospital_names, function(hospital) {
-  subset_data <- data  # Copy the entire data dataframe
-  ggplot(subset_data, aes(x = Year, y = .data[[hospital]])) +  # Use .data[[hospital]] to access hospital-specific columns
-    geom_bar(stat = "identity", fill = "skyblue") +
-    labs(title = paste("Cancer-Related Deaths in", hospital),
-         x = "Year",
-         y = "Number of Deaths") +
-    theme_minimal()
-})
-
-#### Save Plots####
-for (i in 1:length(plots)) {
-  ggsave(filename = paste0(hospital_names[i], "_deaths.png"), plot = plots[[i]], width = 8, height = 6)
-}
-
-
 #### Test ####
 test_that("Dataset Test Cases", {
   
