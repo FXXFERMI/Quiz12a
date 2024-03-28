@@ -12,31 +12,90 @@
 #       install.packages("tidyverse").
 #    b. ggplot2: Fot skteching a plot. nstall 
 #       using install.packages("ggplot2").
+#    c. testthat: For testing Dataset
+#        Install using: install.packages("testthat").
 
 #### Work Place Set Up ####
 library(ggplot2)
 library(tidyverse)
+library(testthat)
 
 #### Simulate Data ####
+# Set seed for reproducibility
 set.seed(123)
 
-years <- 2004:2023
+# Define the number of years and hospitals
+num_years <- 20
 num_hospitals <- 5
 
-data <- data.frame(Year = rep(years, each = num_hospitals))
-for (i in 1:num_hospitals) {
-  hospital <- paste0("Hospital", i)
-  data[hospital] <- round(rnorm(length(years), mean = 130 + 5*i, sd = 10))
-}
+# Create a dataframe to store the data
+data <- data.frame(Year = 2004:2023)
 
-data_melted <- reshape2::melt(data, id.vars = "Year", variable.name = "Hospital", value.name = "Deaths")
+# Generate random numbers of deaths for each hospital for each year
+set.seed(123)
+
+# Define the number of years and hospitals
+num_years <- 20
+num_hospitals <- 5
+
+# Create a dataframe to store the data
+data <- data.frame(Year = 2004:2023)
+hospital_names <- paste0("Hospital", 1:num_hospitals)
+data[hospital_names] <- sapply(1:num_hospitals, function(i) {
+  round(rnorm(num_years, mean = 130 + 5*i, sd = 10))
+})
+
 
 #### Plotting ####
-ggplot(data_melted, aes(x = Year, y = Deaths, color = Hospital)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Number of Cancer-Related Deaths in Sydney Hospitals (2004-2023)",
-       x = "Year",
-       y = "Number of Deaths",
-       color = "Hospital") +
-  theme_minimal()
+plots <- lapply(hospital_names, function(hospital) {
+  subset_data <- data  # Copy the entire data dataframe
+  ggplot(subset_data, aes(x = Year, y = .data[[hospital]])) +  # Use .data[[hospital]] to access hospital-specific columns
+    geom_bar(stat = "identity", fill = "skyblue") +
+    labs(title = paste("Cancer-Related Deaths in", hospital),
+         x = "Year",
+         y = "Number of Deaths") +
+    theme_minimal()
+})
+
+#### Save Plots####
+for (i in 1:length(plots)) {
+  ggsave(filename = paste0(hospital_names[i], "_deaths.png"), plot = plots[[i]], width = 8, height = 6)
+}
+
+
+#### Test ####
+test_that("Dataset Test Cases", {
+  
+  # Test 1: Check if the number of rows is correct
+  expect_equal(nrow(data), 20)
+  
+  # Test 2: Check if the number of columns is correct
+  expect_equal(ncol(data), 6)  # Year + 5 Hospitals
+  
+  # Test 3: Ensure that all values in the 'Year' column are unique
+  expect_equal(length(unique(data$Year)), 20)
+  
+  # Test 4: Ensure that all hospital names are correctly generated
+  expected_hospital_names <- paste0("Hospital", 1:5)
+  expect_equal(colnames(data)[-1], expected_hospital_names)
+  
+  # Test 5: Ensure that the number of deaths is non-negative for all data points
+  expect_true(all(data[, -1] >= 0))
+  
+  # Test 6: Check if the structure of the dataset matches the expected structure
+  expect_named(data, c("Year", expected_hospital_names))
+  
+  # Test 7: Check if the 'Year' column is of numeric data type
+  expect_is(data$Year, "integer")
+  
+  # Test 8: Check if the hospital columns are of integer data type
+  for (hospital in expected_hospital_names) {
+    expect_is(data[[hospital]], "numeric")
+  }
+  
+  # Test 9: Ensure that there are no missing values in the dataset
+  expect_false(any(is.na(data)))
+  
+  # Test 10: Ensure that the data is in the expected format (data frame)
+  expect_is(data, "data.frame")
+})
