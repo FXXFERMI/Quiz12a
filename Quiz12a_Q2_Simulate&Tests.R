@@ -41,7 +41,6 @@ data[hospital_names] <- sapply(1:num_hospitals, function(i) {
   round(rnorm(num_years, mean = 130 + 5*i, sd = 10))
 })
 
-
 #### Test ####
 test_that("Dataset Test Cases", {
   

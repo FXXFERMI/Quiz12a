@@ -36,6 +36,17 @@ for (i in 1:length(plots)) {
   ggsave(filename = paste0(hospital_names[i], "_deaths.png"), plot = plots[[i]], width = 8, height = 6)
 }
 
+#### Data Redefine ####
+set.seed(123)
+data <- data.frame(
+  Year = 2004:2023,
+  Hospital1 = round(rnorm(20, mean = 130, sd = 10)),
+  Hospital2 = round(rnorm(20, mean = 135, sd = 10)),
+  Hospital3 = round(rnorm(20, mean = 140, sd = 10)),
+  Hospital4 = round(rnorm(20, mean = 145, sd = 10)),
+  Hospital5 = round(rnorm(20, mean = 150, sd = 10)),
+  Deaths = round(runif(20, min = 50, max = 150))  # Synthetic outcome variable
+)
 #### Model ####
 formula <- Deaths ~ Year + Hospital1 + Hospital2 + Hospital3 + Hospital4 + Hospital5
 
